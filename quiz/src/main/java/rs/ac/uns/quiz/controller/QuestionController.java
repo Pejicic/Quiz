@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.quiz.dto.QuestionDto;
+import rs.ac.uns.quiz.dto.SettingsDto;
 import rs.ac.uns.quiz.service.QuestionService;
 import java.io.IOException;
 import java.text.ParseException;
@@ -55,6 +56,22 @@ return ResponseEntity.ok().body(true);
 
         return ResponseEntity.ok().body(questionDtos);
     }
+
+
+
+    @GetMapping(value="/getSettings")
+    public ResponseEntity<SettingsDto> getSettings() {
+
+        System.out.println("Pogodjen settings");
+
+        SettingsDto settingsDto=new SettingsDto();
+
+        System.out.println("Pogodv "+settingsDto.getDayOfQuiz()+" "+settingsDto.getHoursBegin());
+
+        return ResponseEntity.ok().body(settingsDto);
+    }
+
+
 
     @DeleteMapping(value="/delete/{id}")
     public ResponseEntity delete(@PathVariable Long id) throws IOException {

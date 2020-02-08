@@ -1,7 +1,6 @@
 package rs.ac.uns.quiz.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,19 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
+import static rs.ac.uns.quiz.model.Globals.*;
 
 @RestController
 @RequestMapping(path = "/user")
 public class PersonController {
-    @Value("${hours.login.start}")
-    int HOURS_LOGIN_START;
-    @Value("${minutes.login.start}")
-    int MINUTES_LOGIN_START;
-    @Value("${hours.login.end}")
-    int HOURS_LOGIN_END;
-    @Value("${minutes.login.end}")
-    int MINUTES_LOGIN_END;
+
 
 
 

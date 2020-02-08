@@ -1,7 +1,6 @@
 package rs.ac.uns.quiz.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,27 +17,16 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static rs.ac.uns.quiz.model.Globals.*;
+
 @Controller
 public class AnswerController {
 
-
-    final String CRON_QUESTIONS = "0 5 11 * * TUE";
-
-    final String SEND_QUESTION = "*/61 * 11-13 * * TUE";
-
-
-    @Value("${hours.login.start}")
-    int HOURS_LOGIN_START;
-    @Value("${minutes.login.start}")
-    int MINUTES_LOGIN_START;
-    @Value("${hours.login.end}")
-    int HOURS_LOGIN_END;
-    @Value("${minutes.login.end}")
-    int MINUTES_LOGIN_END;
 
 
     @Autowired
@@ -52,6 +40,8 @@ public class AnswerController {
 
     List<QuestionDto> weeklyQuestions = new ArrayList<QuestionDto>();
 
+    List<Date> dates=new ArrayList<Date>();
+
     SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
 
     private int i = 0;
@@ -63,6 +53,8 @@ public class AnswerController {
     @Scheduled(cron = CRON_QUESTIONS, zone = "Europe/Paris")
     private void populateQuestions() throws IOException, ParseException {
         weeklyQuestions.clear();
+        dates.clear();
+        i=0;
         Date date = formater.parse(formater.format(Time.getTime()));
 
         weeklyQuestions.addAll(questionService.collectAllQuestionsforDate(date));
@@ -77,12 +69,16 @@ public class AnswerController {
 
 
     @MessageMapping("/hello")
-    public void receiveData(AnswerDto answerDto, Principal principal) throws InterruptedException {
+    public void receiveData(AnswerDto answerDto, Principal principal) throws InterruptedException, IOException {
+        Date date = Time.getTime();
+        long diff=date.getTime()-dates.get(i-1).getTime();
         if (principal == null) {
             throw new ForbiddenException("Access denied");
         }
         System.out.println("Korisnicko je: " + principal.getName());
-        boolean saved = answerService.saveAnswer(answerDto, principal.getName());
+
+
+        boolean saved = answerService.saveAnswer(answerDto, principal.getName(),diff);
         if (saved == false) {
             throw new BadRequestException("Answer is not saved");
         }
@@ -91,18 +87,33 @@ public class AnswerController {
 
 
     @Scheduled(cron = SEND_QUESTION, zone = "Europe/Paris")
-    public void sendData() throws InterruptedException, IOException {
-        Date date = Time.getTime();
-        System.out.println(date);
+    public void sendData() throws IOException, InterruptedException {
+
+
         if (weeklyQuestions.size() < i + 1) {
-            return;
+            if(weeklyQuestions.size()==0){
+                System.out.println("Questions not added yet");
+            }
+            else{
+            System.out.println("List size");
+            }
         }
-        if (date.after(Time.getQuizDate(HOURS_LOGIN_END, MINUTES_LOGIN_END))) {
+        else{
+        Date date = Time.getTime();
+        Date quizDate=Time.getQuizDate(HOURS_LOGIN_END, MINUTES_LOGIN_END);
+        if (date.after((quizDate)) || date.equals(quizDate)) {
             System.out.println("scheduled");
             this.template.convertAndSend("/topic/greetings", weeklyQuestions.get(i));
+            dates.add(date);
+            System.out.println("question num "+i);
+
             i++;
-        }
+        }}
 
     }
+
+
+
+
 
 }

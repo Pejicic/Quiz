@@ -28,11 +28,12 @@ public class AnswerServiceImpl implements AnswerService {
     QuestionRepository questionRepository;
 
     @Override
-    public boolean saveAnswer(AnswerDto answerDto, String username) {
+    public boolean saveAnswer(AnswerDto answerDto, String username, long diff) {
 
         Person person = personRepository.findPersonByUsername(username).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", username)));
         Question question = questionRepository.findById(answerDto.getId()).orElseThrow(() -> new NotFoundException(String.format("Question with id %s not found.", answerDto.getId())));
         Answer answer = new Answer();
+        answer.setTimeBackend(diff);
         answer.setPerson(person);
         answer.setQuestion(question);
         answer.setAnswer(answerDto.getAnswer());
@@ -70,6 +71,8 @@ public class AnswerServiceImpl implements AnswerService {
                 points = calculatePoints(a.getQuestion().getNumOfAnswers(), pointsCorrect, listCorrect, listAnswers, "A");
 
             } else {
+                System.out.println("Ima vise");
+
                 points = calculatePoints(a.getQuestion().getNumOfAnswers(), pointsCorrect, listCorrect, listAnswers, "");
             }
 
@@ -133,6 +136,9 @@ public class AnswerServiceImpl implements AnswerService {
         double points = 0;
         double pointPerAnswer = (Double) correctPoints / numOfAns;
 
+        System.out.println("po odgovoru je poena "+pointPerAnswer);
+
+
 
         for (int i = 0; i <= numOfAns - 1; i++) {
 
@@ -150,7 +156,11 @@ public class AnswerServiceImpl implements AnswerService {
 
 
             } else {
+                System.out.println("NIje asocijacija");
+
                 if (answers[i].trim().equalsIgnoreCase(correct[i].trim())) {
+                    System.out.println("Tacan");
+
                     points = points + pointPerAnswer;
                 }
             }

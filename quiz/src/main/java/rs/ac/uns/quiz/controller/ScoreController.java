@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.ac.uns.quiz.dto.ScoreDto;
 import rs.ac.uns.quiz.model.Answer;
 import rs.ac.uns.quiz.model.CorrectAnswer;
-import rs.ac.uns.quiz.model.Person;
 import rs.ac.uns.quiz.model.Question;
 import rs.ac.uns.quiz.repository.AnswerRepository;
 import rs.ac.uns.quiz.repository.QuestionRepository;
@@ -21,13 +20,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import static rs.ac.uns.quiz.model.Globals.*;
 
 @RestController
 @RequestMapping(path = "/score")
 
 public class ScoreController {
 
-    final String CRON_RESULT = "10 16 11 * * TUE";
 
     SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -65,9 +64,11 @@ public class ScoreController {
 
         List<Answer> answers = questions.stream().map(question -> answerRepository.findFirstByQuestionAndIsAnswerCorrectOrderByTimeAsc(question, CorrectAnswer.CORRECT)).collect(Collectors.toList());
 
+        answers.removeIf(Objects::isNull);
 
-        Set<Person> set = new HashSet<>();
-        answers.stream().filter(p -> set.add(p.getPerson())).collect(Collectors.toList());
+
+        Set<String> set = new HashSet<>();
+        answers.stream().filter(p -> set.add(p.getPerson().getUsername())).collect(Collectors.toList());
 
         set.forEach(a -> scoreService.saveScore(a, date));
 

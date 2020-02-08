@@ -4,5 +4,5 @@ import rs.ac.uns.quiz.dto.AnswerDto;
 
 public interface AnswerService {
 
-    boolean saveAnswer(AnswerDto answerDto,String username);
+    boolean saveAnswer(AnswerDto answerDto, String username, long diff);
 }

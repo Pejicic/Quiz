@@ -25,6 +25,9 @@ public class Answer  {
     Double time;
 
     @Column(nullable = false)
+    long timeBackend;
+
+    @Column(nullable = false)
     CorrectAnswer isAnswerCorrect;
 
     double points;
@@ -85,5 +88,13 @@ public class Answer  {
 
     public void setIsAnswerCorrect(CorrectAnswer isAnswerCorrect) {
         this.isAnswerCorrect = isAnswerCorrect;
+    }
+
+    public long getTimeBackend() {
+        return timeBackend;
+    }
+
+    public void setTimeBackend(long timeBackend) {
+        this.timeBackend = timeBackend;
     }
 }

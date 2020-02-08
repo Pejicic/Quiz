@@ -1,6 +1,7 @@
 package rs.ac.uns.quiz.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "person")
@@ -93,5 +94,18 @@ public class Person  {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Person && ((Person) obj).username == this.username);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
     }
 }

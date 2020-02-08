@@ -3,17 +3,20 @@ package rs.ac.uns.quiz.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.quiz.dto.ScoreDto;
+import rs.ac.uns.quiz.exception.NotFoundException;
 import rs.ac.uns.quiz.model.Answer;
 import rs.ac.uns.quiz.model.CorrectAnswer;
 import rs.ac.uns.quiz.model.Person;
 import rs.ac.uns.quiz.model.Score;
 import rs.ac.uns.quiz.repository.AnswerRepository;
+import rs.ac.uns.quiz.repository.PersonRepository;
 import rs.ac.uns.quiz.repository.QuestionRepository;
 import rs.ac.uns.quiz.repository.ScoreRepository;
 import rs.ac.uns.quiz.service.ScoreService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,11 +31,16 @@ public class ScoreServiceImpl implements ScoreService {
     @Autowired
     private ScoreRepository scoreRepository;
 
+    @Autowired
+    private PersonRepository personRepository;
+
+
 
     @Override
-    public void saveScore(Person user, Date date) {
-
-        List<Answer> answers = questionRepository.findAllByDate(date).stream().map(question -> answerRepository.findAllByPersonAndQuestion(user, question)).collect(Collectors.toList());
+    public void saveScore(String user, Date date) {
+        Person person=personRepository.findPersonByUsername(user).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", user)));
+        List<Answer> answers = questionRepository.findAllByDate(date).stream().map(question -> answerRepository.findAllByPersonAndQuestion(person, question)).collect(Collectors.toList());
+        answers.removeIf(Objects::isNull);
 
         double score = 0;
 
@@ -45,7 +53,7 @@ public class ScoreServiceImpl implements ScoreService {
         Score s = new Score();
         s.setDate(date);
         s.setBonus(0);
-        s.setUser(user);
+        s.setUser(person);
         s.setFinalScore(score);
         s.setScorePlusBonus(score);
 
@@ -61,6 +69,9 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public void updateScore(Date date) {
         List<Answer> answers = questionRepository.findAllByDate(date).stream().map(question -> answerRepository.findFirstByQuestionAndIsAnswerCorrectOrderByTimeAsc(question, CorrectAnswer.CORRECT)).collect(Collectors.toList());
+
+        answers.removeIf(Objects::isNull);
+
         for (Answer a:answers) {
 
             Score s=scoreRepository.findScoreByPersonAndDate(a.getPerson(),date);
