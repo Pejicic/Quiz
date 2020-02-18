@@ -30,8 +30,10 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public boolean saveAnswer(AnswerDto answerDto, String username, long diff) {
 
-        Person person = personRepository.findPersonByUsername(username).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", username)));
-        Question question = questionRepository.findById(answerDto.getId()).orElseThrow(() -> new NotFoundException(String.format("Question with id %s not found.", answerDto.getId())));
+        Person person = personRepository.findPersonByUsername(username).orElseThrow(
+                () -> new NotFoundException(String.format("User with username %s not found.", username)));
+        Question question = questionRepository.findById(answerDto.getId()).orElseThrow(
+                () -> new NotFoundException(String.format("Question with id %s not found.", answerDto.getId())));
         Answer answer = new Answer();
         answer.setTimeBackend(diff);
         answer.setPerson(person);
@@ -44,7 +46,6 @@ public class AnswerServiceImpl implements AnswerService {
         if (save == null) {
             return false;
         }
-
 
         return true;
     }
@@ -137,8 +138,6 @@ public class AnswerServiceImpl implements AnswerService {
         double pointPerAnswer = (Double) correctPoints / numOfAns;
 
         System.out.println("po odgovoru je poena "+pointPerAnswer);
-
-
 
         for (int i = 0; i <= numOfAns - 1; i++) {
 

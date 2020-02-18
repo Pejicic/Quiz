@@ -3,7 +3,9 @@ package rs.ac.uns.quiz.dto;
 public class RecaptchaResponse {
 
     boolean success;
+
     String challenge_ts;
+
     String hostname;
 
     public boolean isSuccess() {

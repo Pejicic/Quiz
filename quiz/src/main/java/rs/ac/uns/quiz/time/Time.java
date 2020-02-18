@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
-import static rs.ac.uns.quiz.model.Globals.*;
+
+import static rs.ac.uns.quiz.model.Globals.DAY;
 
 
 public class Time {
-    public static final String TIME_SERVER = "time-a.nist.gov";
+    public static final String TIME_SERVER = "pool.ntp.org";
 
 
 
@@ -20,7 +21,6 @@ public class Time {
         InetAddress inetAddress = InetAddress.getByName(TIME_SERVER);
         TimeInfo timeInfo = timeClient.getTime(inetAddress);
         long returnTime = timeInfo.getReturnTime();
-        Date time = new Date(returnTime);
         long systemtime = System.currentTimeMillis();
         timeInfo.computeDetails();
         Date realdate = new Date(systemtime + timeInfo.getOffset());

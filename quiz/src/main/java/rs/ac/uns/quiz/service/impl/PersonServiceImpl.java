@@ -17,6 +17,7 @@ import rs.ac.uns.quiz.model.Role;
 import rs.ac.uns.quiz.repository.PersonRepository;
 import rs.ac.uns.quiz.security.TokenUtils;
 import rs.ac.uns.quiz.service.PersonService;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public boolean verifyRecaptcha(String recaptcha) {
-        System.out.println("key is " + secretKey);
         MultiValueMap param = new LinkedMultiValueMap<>();
         param.add("secret", secretKey);
         param.add("response", recaptcha);
@@ -91,7 +91,8 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public boolean editPassword(LoginDto editDto) {
         Person person = personRepository.findPersonByUsername(editDto.getUsername())
-                .orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", editDto.getUsername())));
+                .orElseThrow(()
+                        -> new NotFoundException(String.format("User with username %s not found.", editDto.getUsername())));
 
         person.setPassword(passwordEncoder.encode(editDto.getPassword()));
         personRepository.save(person);
@@ -108,16 +109,11 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
-    @Override
-    public UserDto userByUsername(String username) {
-        Person person = personRepository.findPersonByUsername(username)
-                .orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", username)));
-        return personToUserDto(person);
-    }
 
     @Override
     public boolean blockUser(String username) {
-        Person p = personRepository.findPersonByUsername(username).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", username)));
+        Person p = personRepository.findPersonByUsername(username).orElseThrow(() ->
+                new NotFoundException(String.format("User with username %s not found.", username)));
         p.setRole(Role.BLOCKEDUSER);
         personRepository.save(p);
 
@@ -126,7 +122,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public boolean unblockUser(String username) {
-        Person p = personRepository.findPersonByUsername(username).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", username)));
+        Person p = personRepository.findPersonByUsername(username).orElseThrow(
+                () -> new NotFoundException(String.format("User with username %s not found.", username)));
         p.setRole(Role.USER);
         personRepository.save(p);
         return true;

@@ -23,14 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
 import static rs.ac.uns.quiz.model.Globals.*;
 
 @RestController
 @RequestMapping(path = "/user")
 public class PersonController {
-
-
-
 
 
     @Autowired
@@ -45,6 +43,9 @@ public class PersonController {
     @Autowired
     private TokenUtils tokenUtils;
 
+    public PersonController() {
+    }
+
     @GetMapping(value="/loggedUser")
     public ResponseEntity<UserDto> getUser(HttpServletRequest http) {
         String authToken = http.getHeader("X-Auth-Token");
@@ -57,13 +58,10 @@ public class PersonController {
     @GetMapping(value="/getAll")
     public ResponseEntity<List<UserDto>> getUsers() {
 
-
-
         List<UserDto> userDtos=personService.getAllUsers();
 
         return ResponseEntity.ok().body(userDtos);
     }
-
 
 
     @PutMapping(value="/editData")
@@ -115,18 +113,14 @@ public class PersonController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto, @RequestParam(name = "g-recaptcha-response") String capResponse) throws IOException {
-        Date date=Time.getTime();
-        System.out.println("hej "+loginDto.getUsername()+" "+loginDto.getPassword());
-        System.out.println(capResponse);
+        Date date = Time.getTime();
 
-       boolean verified=personService.verifyRecaptcha(capResponse);
-       if(verified==false){
+        boolean verified = personService.verifyRecaptcha(capResponse);
+        if (verified == false) {
 
-           System.out.println("Bad request");
+            return new ResponseEntity<>(new TokenDto(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
 
-           return new ResponseEntity<>(new TokenDto(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-
-       }
+        }
 
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginDto.getUsername(),
@@ -136,8 +130,8 @@ public class PersonController {
 
         HttpHeaders headers = new HttpHeaders();
         UserDetails details = userDetailsService.loadUserByUsername(loginDto.getUsername());
-        if(details.getAuthorities().toString().contains("USER")){
-            if(date.before(Time.getQuizDate(HOURS_LOGIN_START,MINUTES_LOGIN_START)) || date.after(Time.getQuizDate(HOURS_LOGIN_END,MINUTES_LOGIN_END))){
+        if (details.getAuthorities().toString().contains("USER")) {
+            if (date.before(Time.getQuizDate(HOURS_LOGIN_START, MINUTES_LOGIN_START)) || date.after(Time.getQuizDate(HOURS_LOGIN_END, MINUTES_LOGIN_END))) {
                 System.out.println("Time is problem");
 
                 throw new BadRequestException("Time for login  expired. See you next time. :)");
@@ -145,7 +139,7 @@ public class PersonController {
 
         }
 
-        if (details.getAuthorities().toString().contains("BLOCKED")){
+        if (details.getAuthorities().toString().contains("BLOCKED")) {
             throw new RuntimeException("This user is blocked.");
         }
 
@@ -153,11 +147,11 @@ public class PersonController {
         String authToken = tokenUtils.generateToken(details);
         headers.add("X-Auth-Token", authToken);
 
-        TokenDto tokenDto=new TokenDto();
-       String role=details.getAuthorities().toString().replaceAll("^.|.$", "");
+        TokenDto tokenDto = new TokenDto();
+        String role = details.getAuthorities().toString().replaceAll("^.|.$", "");
         tokenDto.setRole(role);
         tokenDto.setToken(authToken);
-        
+
         return new ResponseEntity<>(tokenDto, headers, HttpStatus.OK);
 
     }

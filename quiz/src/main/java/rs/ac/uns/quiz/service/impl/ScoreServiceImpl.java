@@ -39,7 +39,7 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public void saveScore(String user, Date date) {
         Person person=personRepository.findPersonByUsername(user).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found.", user)));
-        List<Answer> answers = questionRepository.findAllByDate(date).stream().map(question -> answerRepository.findAllByPersonAndQuestion(person, question)).collect(Collectors.toList());
+        List<Answer> answers = questionRepository.findAllByDate(date).stream().map(question -> answerRepository.findByPersonAndQuestion(person, question).get()).collect(Collectors.toList());
         answers.removeIf(Objects::isNull);
 
         double score = 0;

@@ -1,7 +1,4 @@
 package rs.ac.uns.quiz.dto;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static rs.ac.uns.quiz.model.Globals.*;
 
@@ -16,13 +13,13 @@ public class SettingsDto {
     private int dayOfQuiz;// pocinje od nedjelje sa 0
 
     public SettingsDto() {
-        this.hoursBegin=HOURS_LOGIN_START-1;  //jer se na frontu gleda utc vrijeme
-        this.minutesBegin=MINUTES_LOGIN_START;
-        this.hoursEnd=HOURS_LOGIN_END-1;
-        this.minutesEnd=MINUTES_LOGIN_END;
-        this.dayOfQuiz=DAY-1;
-        this.quizFinishedHours=HOURS_QUIZ_END-1;
-        this.quizFinishedMinutes=MINUTES_QUIZ_END;
+        this.hoursBegin = HOURS_LOGIN_START - 1;  //jer se na frontu gleda utc vrijeme
+        this.minutesBegin = MINUTES_LOGIN_START;
+        this.hoursEnd = HOURS_LOGIN_END - 1;
+        this.minutesEnd = MINUTES_LOGIN_END;
+        this.dayOfQuiz = DAY - 1;
+        this.quizFinishedHours = HOURS_QUIZ_END - 1;
+        this.quizFinishedMinutes = MINUTES_QUIZ_END;
 
     }
 

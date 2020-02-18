@@ -23,7 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {
-        Person user=userRepository.findPersonByUsername(username).orElseThrow(() -> new NotFoundException(String.format("User with username %s not found", username)));
+        Person user=userRepository.findPersonByUsername(username).orElseThrow(
+                () -> new NotFoundException(String.format("User with username %s not found", username)));
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add(grantedAuthority);

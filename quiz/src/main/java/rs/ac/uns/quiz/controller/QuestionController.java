@@ -62,11 +62,7 @@ return ResponseEntity.ok().body(true);
     @GetMapping(value="/getSettings")
     public ResponseEntity<SettingsDto> getSettings() {
 
-        System.out.println("Pogodjen settings");
-
         SettingsDto settingsDto=new SettingsDto();
-
-        System.out.println("Pogodv "+settingsDto.getDayOfQuiz()+" "+settingsDto.getHoursBegin());
 
         return ResponseEntity.ok().body(settingsDto);
     }
